@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [develop, main]
+  pull_request:
+    branches: [develop, main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install
+        run: python -m pip install -e ".[dev]"
+
+      - name: Lint (ruff)
+        run: python -m ruff check .
+        continue-on-error: false
+
+      - name: Testes + Coverage
+        env:
+          OPENAI_API_KEY: "sk-mock-ci"
+          TOOL_USE_MOCK: "true"
+          STORAGE_PATH: "./storage-ci"
+          MAX_STEPS: "20"
+          ADVERSARIAL_THRESHOLD: "0.5"
+          LOG_LEVEL: "INFO"
+        run: |
+          mkdir -p storage-ci/executions
+          pytest --cov=src --cov-report=xml --cov-report=html --junitxml=test-results.xml
+
+      - name: Build validate
+        run: |
+          python -m compileall -q src tests
+          python -c "from src.config import settings; print('smoke ok:', type(settings).__name__)"
+
+      - name: Upload coverage / reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: reports
+          path: |
+            coverage.xml
+            htmlcov/
+            test-results.xml
