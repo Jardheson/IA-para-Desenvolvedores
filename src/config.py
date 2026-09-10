@@ -1,10 +1,9 @@
 from functools import lru_cache
 from pathlib import Path
-from typing import Literal, Optional
+from typing import Literal
 
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
 
 LogLevel = Literal["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
@@ -13,11 +12,11 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8", extra="ignore")
 
     # LLM
-    openai_api_key: Optional[str] = Field(default=None, repr=False)
+    openai_api_key: str | None = Field(default=None, repr=False)
     openai_model: str = "gpt-4o-mini"
 
     # Low-code / n8n
-    n8n_webhook_url: Optional[str] = None
+    n8n_webhook_url: str | None = None
 
     # Tool
     tool_use_mock: bool = True
