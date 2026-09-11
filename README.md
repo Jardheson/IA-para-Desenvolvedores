@@ -669,4 +669,7 @@ Um board Kanban recomendado:
 
 ---
 
+## Autor
+
+**Jardheson Oliveira**  
 *Fim do README · Agente Inteligente de Triagem e Análise de Incidentes Técnicos · Módulo 2 — IA para Desenvolvedores.*
